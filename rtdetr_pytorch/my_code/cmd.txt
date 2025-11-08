@@ -13,6 +13,8 @@ torchrun  tools/train.py -c configs/rtdetr/rtdetr_r50vd_6x_coco.yml -r /root/pro
 python infer.py -c ../configs/rtdetr/rtdetr_r50vd_6x_coco.yml -r ../output/rtdetr_r50vd_6x_coco/rtdetr_r50vd_2x_coco_objects365_from_paddle.pth -f /root/autodl-tmp/DIOR/raw/JPEGImages-trainval/05871.jpg -d cuda
 
 ######################### 使用 DIOR-coco 数据集评估 ##########################
+python infer.py -d cpu -c ../configs/rtdetr/rtdetr_r50vd_6x_dior.yml -r /root/autodl-tmp/output/rtdetr_r50vd_6x_dior/checkpoint0001.pth -f /root/autodl-tmp/DIOR_coco/test/11802.jpg
+
 torchrun  tools/train.py -c configs/rtdetr/rtdetr_r50vd_6x_dior.yml -r /root/projects/RT-DETR/rtdetr_pytorch/configs/rtdetr/output/rtdetr_r50vd_6x_dior/rtdetr_r50vd_2x_coco_objects365_from_paddle.pth --test-only
 
 ######################### 使用 DIOR-coco 数据集训练 ##########################
@@ -21,5 +23,9 @@ torchrun --nproc_per_node=1 tools/train.py -c configs/rtdetr/rtdetr_r50vd_6x_dio
 
 export CUDA_VISIBLE_DEVICES=0
 torchrun --master_port=8844 --nproc_per_node=1 tools/train.py -c configs/rtdetr/rtdetr_r50vd_6x_dior.yml -t /root/projects/RT-DETR/rtdetr_pytorch/configs/rtdetr/output/rtdetr_r50vd_6x_coco/rtdetr_r50vd_2x_coco_objects365_from_paddle.pth
+torchrun tools/train.py -c configs/rtdetr/rtdetr_r50vd_6x_dior.yml -t /root/projects/RT-DETR/rtdetr_pytorch/configs/rtdetr/output/rtdetr_r50vd_6x_coco/rtdetr_r50vd_2x_coco_objects365_from_paddle.pth
+python tools/train.py -c configs/rtdetr/rtdetr_r50vd_6x_dior.yml -t /root/projects/RT-DETR/rtdetr_pytorch/configs/rtdetr/output/rtdetr_r50vd_6x_coco/rtdetr_r50vd_2x_coco_objects365_from_paddle.pth
+
+python tools/train.py -c configs/rtdetr/rtdetr_r50vd_6x_dior.yml -t /root/autodl-tmp/output/rtdetr_r50vd_6x_dior/checkpoint0012.pth
 
 

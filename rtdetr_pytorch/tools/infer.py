@@ -98,20 +98,96 @@ def merge_predictions(predictions, slice_coordinates, orig_image_size, slice_wid
         merged_boxes.extend(valid_boxes)
         merged_scores.extend(valid_scores)
     return np.array(merged_labels), np.array(merged_boxes), np.array(merged_scores)
-def draw(images, labels, boxes, scores, thrh = 0.6, path = ""):
+# def draw(images, labels, boxes, scores, thrh = 0.6, path = ""):
+#     for i, im in enumerate(images):
+#         draw = ImageDraw.Draw(im)
+#         scr = scores[i]
+#         lab = labels[i][scr > thrh]
+#         box = boxes[i][scr > thrh]
+#         scrs = scores[i][scr > thrh]
+#         for j,b in enumerate(box):
+#             draw.rectangle(list(b), outline='red',)
+#             draw.text((b[0], b[1]), text=f"label: {lab[j].item()} {round(scrs[j].item(),2)}", font=ImageFont.load_default(), fill='blue')
+#         if path == "":
+#             im.save(f'results_{i}.jpg')
+#         else:
+#             im.save(path)
+import random
+from PIL import Image, ImageDraw, ImageFont
+
+def draw(images, labels, boxes, scores, thrh=0.6, path=""):
+    """
+    在图像上绘制检测框和标签，每个框使用随机颜色。
+    
+    Args:
+        images: PIL Image 对象列表
+        labels: 标签列表 [batch_size, num_boxes]
+        boxes: 边界框列表 [batch_size, num_boxes, 4] (x1, y1, x2, y2)
+        scores: 置信度分数列表 [batch_size, num_boxes]
+        thrh: 置信度阈值
+        path: 保存路径。如果为空，则保存为 results_i.jpg
+    """
+    import random
+    from PIL import ImageDraw, ImageFont
+    import colorsys
+
+    # 假设 images, scores, labels, boxes 和 thrh 已定义
+    # 类别颜色映射表
+    category_colors = {}
+
     for i, im in enumerate(images):
+        # 创建可绘制对象
         draw = ImageDraw.Draw(im)
+        
+        # 获取当前图像的预测结果，并根据阈值过滤
         scr = scores[i]
         lab = labels[i][scr > thrh]
         box = boxes[i][scr > thrh]
         scrs = scores[i][scr > thrh]
-        for j,b in enumerate(box):
-            draw.rectangle(list(b), outline='red',)
-            draw.text((b[0], b[1]), text=f"label: {lab[j].item()} {round(scrs[j].item(),2)}", font=ImageFont.load_default(), fill='blue')
+        
+        # 为当前图像中的每个检测框绘制
+        for j, b in enumerate(box):
+            category = lab[j].item()
+            
+            if category not in category_colors:
+                # 如果该类别还没有分配颜色，则生成新的颜色
+                hue = random.random()  # 色调 0~1
+                saturation = 0.8 + random.random() * 0.2  # 饱和度 0.8~1.0
+                value = 0.8 + random.random() * 0.2       # 明度 0.8~1.0
+                
+                rgb = colorsys.hsv_to_rgb(hue, saturation, value)
+                color = tuple(int(c * 255) for c in rgb)
+                
+                # 将新颜色添加到映射表
+                category_colors[category] = color
+            else:
+                # 使用已分配的颜色
+                color = category_colors[category]
+            
+            hex_color = '#{:02x}{:02x}{:02x}'.format(*color)  # 转为十六进制，用于PIL
+            
+            # 绘制矩形框
+            draw.rectangle(list(b), outline=hex_color, width=5)  # width 可选，让框更明显
+            
+            # 添加标签文本
+            text = f"[{category}] {round(scrs[j].item(), 2)}"
+            draw.text((b[0], b[1]), text=text, font=ImageFont.truetype("DejaVuSans.ttf", size=25), fill='white', stroke_fill=hex_color, stroke_width=5)        
+        # 保存图像
         if path == "":
             im.save(f'results_{i}.jpg')
         else:
-            im.save(path)
+            # 如果 path 是单个文件名，建议改为 path_{i}.jpg 避免覆盖
+            save_path = path if len(images) == 1 else f"{path}_{i}.jpg"
+            im.save(save_path)
+
+# --- 使用示例 ---
+# 假设你有以下数据：
+# images: [PIL.Image, PIL.Image, ...]
+# labels: [torch.Tensor([1, 2, 1]), torch.Tensor([0, 2]), ...]
+# boxes:  [torch.Tensor([[x1,y1,x2,y2], ...]), ...]
+# scores: [torch.Tensor([0.9, 0.7, 0.5]), ...]
+
+# draw(images, labels, boxes, scores, thrh=0.6, path="output")
             
 def main(args, ):
     """main
@@ -140,8 +216,14 @@ def main(args, ):
     
     model = Model().to(args.device)
     im_pil = Image.open(args.im_file).convert('RGB')
+    new_size = (im_pil.width * 2, im_pil.height * 2)
+    im_pil = im_pil.resize(new_size, Image.Resampling.LANCZOS)  # 使用高质量重采样
     w, h = im_pil.size
     orig_size = torch.tensor([w, h])[None].to(args.device)
+    
+    # # 将图像放大2倍
+    # new_size = (im_org.width * 2, im_org.height * 2)
+    # im_pil = im_org.resize(new_size, Image.Resampling.LANCZOS)  # 使用高质量重采样
     
     transforms = T.Compose([
         T.Resize((640, 640)),  
@@ -177,7 +259,7 @@ def main(args, ):
         output = model(im_data, orig_size)
         labels, boxes, scores = output
         
-    draw([im_pil], labels, boxes, scores, 0.6)
+    draw([im_pil], labels, boxes, scores, 0.4)
   
 if __name__ == '__main__':
     import argparse
