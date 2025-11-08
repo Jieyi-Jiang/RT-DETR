@@ -1,5 +1,11 @@
 torchrun  tools/train.py -c configs/rtdetr/rtdetr_r50vd_6x_coco.yml -r /root/projects/RT-DETR/rtdetr_pytorch/configs/rtdetr/output/rtdetr_r50vd_6x_coco/rtdetr_r50vd_2x_coco_objects365_from_paddle.pth --test-only
 
+export CUDA_VISIBLE_DEVICES=0 
+python tools/train.py -c configs/rtdetr/rtdetr_r50vd_6x_coco.yml
+
+export CUDA_VISIBLE_DEVICES=0
+torchrun --nproc_per_node=1 tools/train.py -c configs/rtdetr/rtdetr_r50vd_6x_coco.yml
+
 python infer.py -c ../configs/rtdetr/rtdetr_r50vd_6x_coco.yml -r ../output/rtdetr_r50vd_6x_coco/rtdetr_r50vd_2x_coco_objects365_from_paddle.pth -f /root/autodl-tmp/DIOR/raw/JPEGImages-trainval/05871.jpg -d cuda
 
 torchrun  tools/train.py -c configs/rtdetr/rtdetr_r50vd_6x_dior.yml -r /root/projects/RT-DETR/rtdetr_pytorch/configs/rtdetr/output/rtdetr_r50vd_6x_dior/rtdetr_r50vd_2x_coco_objects365_from_paddle.pth --test-only
