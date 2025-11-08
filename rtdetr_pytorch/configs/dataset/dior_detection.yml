@@ -1,14 +1,14 @@
 task: detection
 
-num_classes: 20
+num_classes: 80
 remap_mscoco_category: False
 
 train_dataloader: 
   type: DataLoader
   dataset: 
     type: CocoDetection
-    img_folder: /root/autodl-tmp/coco/train2017/
-    ann_file: /root/autodl-tmp/coco/annotations/instances_train2017.json
+    img_folder: /root/autodl-tmp/DIOR_coco/train/
+    ann_file: /root/autodl-tmp/DIOR_coco/annotations/train.json
     transforms:
       type: Compose
       ops: ~
@@ -22,8 +22,8 @@ val_dataloader:
   type: DataLoader
   dataset: 
     type: CocoDetection
-    img_folder: /root/autodl-tmp/coco/val2017/
-    ann_file: /root/autodl-tmp/coco/annotations/instances_val2017.json
+    img_folder: /root/autodl-tmp/DIOR_coco
+    ann_file: /root/autodl-tmp/DIOR_coco/annotations/val.json
     transforms:
       type: Compose
       ops: ~ 

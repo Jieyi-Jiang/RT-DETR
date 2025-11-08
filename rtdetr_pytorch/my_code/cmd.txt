@@ -1,4 +1,4 @@
-torchrun  tools/train.py -c configs/rtdetr/rtdetr_r50vd_6x_coco.yml -r /root/projects/RT-DETR/rtdetr_pytorch/configs/rtdetr/output/rtdetr_r50vd_6x_coco/rtdetr_r50vd_2x_coco_objects365_from_paddle.pth --test-only
+######################### 使用 COCO数据集（默认） 训练 #########################
 
 export CUDA_VISIBLE_DEVICES=0 
 python tools/train.py -c configs/rtdetr/rtdetr_r50vd_6x_coco.yml
@@ -6,8 +6,20 @@ python tools/train.py -c configs/rtdetr/rtdetr_r50vd_6x_coco.yml
 export CUDA_VISIBLE_DEVICES=0
 torchrun --nproc_per_node=1 tools/train.py -c configs/rtdetr/rtdetr_r50vd_6x_coco.yml
 
+######################### 使用 COCO数据集（默认） 评估 #########################
+torchrun  tools/train.py -c configs/rtdetr/rtdetr_r50vd_6x_coco.yml -r /root/projects/RT-DETR/rtdetr_pytorch/configs/rtdetr/output/rtdetr_r50vd_6x_coco/rtdetr_r50vd_2x_coco_objects365_from_paddle.pth --test-only
+
+################################ 评估一张照片 ################################
 python infer.py -c ../configs/rtdetr/rtdetr_r50vd_6x_coco.yml -r ../output/rtdetr_r50vd_6x_coco/rtdetr_r50vd_2x_coco_objects365_from_paddle.pth -f /root/autodl-tmp/DIOR/raw/JPEGImages-trainval/05871.jpg -d cuda
 
+######################### 使用 DIOR-coco 数据集评估 ##########################
 torchrun  tools/train.py -c configs/rtdetr/rtdetr_r50vd_6x_dior.yml -r /root/projects/RT-DETR/rtdetr_pytorch/configs/rtdetr/output/rtdetr_r50vd_6x_dior/rtdetr_r50vd_2x_coco_objects365_from_paddle.pth --test-only
+
+######################### 使用 DIOR-coco 数据集训练 ##########################
+export CUDA_VISIBLE_DEVICES=0
+torchrun --nproc_per_node=1 tools/train.py -c configs/rtdetr/rtdetr_r50vd_6x_dior.yml
+
+export CUDA_VISIBLE_DEVICES=0
+torchrun --master_port=8844 --nproc_per_node=1 tools/train.py -c configs/rtdetr/rtdetr_r50vd_6x_dior.yml -t /root/projects/RT-DETR/rtdetr_pytorch/configs/rtdetr/output/rtdetr_r50vd_6x_coco/rtdetr_r50vd_2x_coco_objects365_from_paddle.pth
 
 
