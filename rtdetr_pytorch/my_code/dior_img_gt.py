@@ -19,7 +19,7 @@ def visualize_and_save_coco_annotation(coco, img_dir, img_number, output_path):
     :param img_number: 图片编号
     :param output_path: 输出图片文件路径
     """
-    selected_img_id = img_number - 11726 + 1
+    selected_img_id = img_number - 5863 + 1
     
     # 获取图像信息
     img_info = coco.loadImgs(selected_img_id)[0]
@@ -63,8 +63,8 @@ def visualize_and_save_coco_annotation(coco, img_dir, img_number, output_path):
     print(f"Processed image saved to {output_path}")
 
 def main(img_number):
-    annotation_file = "/root/autodl-tmp/DIOR_coco/annotations/test.json"
-    img_dir = "/root/autodl-tmp/DIOR_coco/test"
+    annotation_file = "/root/autodl-tmp/DIOR_coco/annotations/val.json"
+    img_dir = "/root/autodl-tmp/DIOR_coco/val"
 
     coco = COCO(annotation_file)
 

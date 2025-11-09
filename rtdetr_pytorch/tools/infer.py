@@ -137,6 +137,7 @@ def draw(images, labels, boxes, scores, thrh=0.6, path=""):
 
     for i, im in enumerate(images):
         # 创建可绘制对象
+        
         draw = ImageDraw.Draw(im)
         
         # 获取当前图像的预测结果，并根据阈值过滤
@@ -170,8 +171,15 @@ def draw(images, labels, boxes, scores, thrh=0.6, path=""):
             draw.rectangle(list(b), outline=hex_color, width=5)  # width 可选，让框更明显
             
             # 添加标签文本
-            text = f"[{category}] {round(scrs[j].item(), 2)}"
-            draw.text((b[0], b[1]), text=text, font=ImageFont.truetype("DejaVuSans.ttf", size=25), fill='white', stroke_fill=hex_color, stroke_width=5)        
+            text = f"{category}/\\{round(scrs[j].item(), 2)}"
+            if b[1] - 35 >= 35:
+                text_y = b[1] - 35
+            else:
+                text_y = b[1] + 35
+            draw.text((b[0], text_y), 
+                      text=text, 
+                      font=ImageFont.truetype("DejaVuSans.ttf", size=25), fill='white', stroke_fill=hex_color, 
+                      stroke_width=5)        
         # 保存图像
         if path == "":
             im.save(f'results_{i}.jpg')
@@ -259,7 +267,7 @@ def main(args, ):
         output = model(im_data, orig_size)
         labels, boxes, scores = output
         
-    draw([im_pil], labels, boxes, scores, 0.4)
+    draw([im_pil], labels, boxes, scores, 0.5)
   
 if __name__ == '__main__':
     import argparse
