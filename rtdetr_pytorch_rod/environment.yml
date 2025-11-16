@@ -1,0 +1,22 @@
+# environment.yml
+name: detr
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10   # 显式指定 Python 版本
+  - pip
+  - numpy<2.0
+  - torch==2.0.1
+  - torchvision==0.15.2
+  - torchaudio==2.0.2
+  - onnx==1.14.0
+  - onnxruntime==1.15.1
+  - pycocotools
+  - PyYAML
+  - scipy
+  - transformers==4.30.2
+  - pip:
+    - opencv-python
+    - tqdm
